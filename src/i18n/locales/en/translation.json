@@ -679,17 +679,14 @@
         "description": "View source code and contribute",
         "button": "View on GitHub"
       },
-      "acknowledgments": {
-        "title": "Acknowledgments",
-        "ggml": {
-          "title": "ggml",
-          "description": "High-performance tensor library for on-device machine learning inference",
-          "details": "Popizdim's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
-        }
+      "author": {
+        "title": "Author",
+        "name": "Vlad Proshinsky",
+        "telegram": "Telegram",
+        "site": "Website"
       }
     },
     "cloud": {
-      "intro": "Microsoft MAI models in the cloud. Audio is sent to the selected provider only while you dictate. Empty fields fall back to the OPENROUTER_API_KEY and AZURE_MAI_* environment variables.",
       "provider": "Transcription model",
       "useProvider": "Use for dictation",
       "active": "In use",
@@ -730,7 +727,6 @@
       }
     },
     "tts": {
-      "intro": "Reads text aloud with Microsoft MAI-Voice through OpenRouter. Select text in any app and press the shortcut, or choose “Speak Text” in the menu bar icon. Press again to stop.",
       "keyMissing": "Speech uses the OpenRouter API key from the Cloud tab (or the OPENROUTER_API_KEY environment variable). Add it there if you haven't.",
       "voiceGroup": "Voice",
       "voiceGroupDescription": "MAI-Voice voice and model used for all speech.",
@@ -754,8 +750,6 @@
       "saveDirChange": "Change…",
       "saveDirReset": "Use default",
       "saveDirPick": "Folder for spoken audio",
-      "shortcutGroup": "Speak selected text",
-      "shortcutGroupDescription": "Click the shortcut, then press the keys you want: the new combination is saved right away.",
       "selectionNote": "The selection is read through the macOS Accessibility API; the clipboard is not touched. Native apps (Safari, Notes, TextEdit, Pages, Mail) work. In Chrome and Electron apps Popizdim switches on their accessibility mode on first use. Some apps, such as certain PDF viewers and terminals, don't expose their selection."
     }
   },
