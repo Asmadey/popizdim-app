@@ -1,51 +1,74 @@
-"""Source of truth for Popizdim icons. Writes SVGs; render.sh rasterizes them.
+"""Source of truth for the Popizdim tray glyphs. Writes SVGs; render.py rasterizes them.
 
-Glyph grid is 100x100. Tray icons are flat silhouettes (macOS uses them as
-template images); the app icon is a gradient squircle with a white glyph.
+Glyph grid is 100 wide by 60 tall (viewBox 0 20 100 60): the mouth is wide, so
+the canvas is too, and macOS scales a tray image to 18 pt high at its own
+aspect. Tray icons are flat silhouettes (macOS uses them as template images). The app icon is raster artwork, see cut_app_icon.py.
 """
+import math
 import pathlib
 
 OUT = pathlib.Path(__file__).parent / "svg"
 OUT.mkdir(exist_ok=True)
 
-BRAND = "#6D6AF5"          # colored-theme tray glyph
-GRAD = ("#4F46E5", "#8B5CF6")  # app icon background (indigo → violet)
+BRAND = "#E8645A"  # colored-theme tray glyph (the coral of the app icon's lips)
 
-# Microphone: capsule, cradle arc, stem, base.
-MIC = """
-  <rect x="37" y="10" width="26" height="46" rx="13" fill="{c}"/>
-  <path d="M24 45 a26 26 0 0 0 52 0" fill="none" stroke="{c}" stroke-width="7.5" stroke-linecap="round"/>
-  <line x1="50" y1="72" x2="50" y2="84" stroke="{c}" stroke-width="7.5" stroke-linecap="round"/>
-  <line x1="37" y1="88" x2="63" y2="88" stroke="{c}" stroke-width="7.5" stroke-linecap="round"/>
-"""
+# Open mouth, front view: wide lips with pointed corners and a cupid's bow, a
+# dark opening (even-odd hole) and a tongue, followed by three sound waves.
+LIPS = (
+    "M4 50 C 12 34, 24 31.5, 32 36.5 C 40 31.5, 52 34, 60 50 C 48 76, 16 76, 4 50 Z "
+    "M13.5 50 C 20 43, 27 41.5, 32 43.5 C 37 41.5, 44 43, 50.5 50 "
+    "C 45 59, 38 61.5, 32 61.5 C 26 61.5, 19 59, 13.5 50 Z"
+)
+TONGUE = "M20 55.5 C 24 51, 40 51, 44 55.5 C 40 59.5, 24 59.5, 20 55.5 Z"
+
+
+def waves(c, cx=62, cy=50, radii=(12, 22, 32), angle=55, width=7):
+    """Arcs of growing radius opening to the right of the mouth."""
+    out = ""
+    for r in radii:
+        x = cx + r * math.cos(math.radians(angle))
+        dy = r * math.sin(math.radians(angle))
+        out += (
+            f'<path d="M{x:.1f} {cy - dy:.1f} A{r} {r} 0 0 1 {x:.1f} {cy + dy:.1f}" '
+            f'fill="none" stroke="{c}" stroke-width="{width}" stroke-linecap="round"/>'
+        )
+    return out
+
+
+def mouth(c):
+    return (
+        f'<path d="{LIPS}" fill="{c}" fill-rule="evenodd"/>'
+        f'<path d="{TONGUE}" fill="{c}"/>' + waves(c)
+    )
+
 
 # Transcribed text: three lines.
 LINES = """
-  <line x1="29" y1="35" x2="71" y2="35" stroke="{c}" stroke-width="8" stroke-linecap="round"/>
-  <line x1="29" y1="50" x2="71" y2="50" stroke="{c}" stroke-width="8" stroke-linecap="round"/>
-  <line x1="29" y1="65" x2="57" y2="65" stroke="{c}" stroke-width="8" stroke-linecap="round"/>
+  <line x1="24" y1="38" x2="76" y2="38" stroke="{c}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="24" y1="50" x2="76" y2="50" stroke="{c}" stroke-width="7" stroke-linecap="round"/>
+  <line x1="24" y1="62" x2="58" y2="62" stroke="{c}" stroke-width="7" stroke-linecap="round"/>
 """
 
 
-def svg(body, size=100):
-    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 100 100">{body}</svg>'
+def svg(body):
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="60" viewBox="0 20 100 60">{body}</svg>'
 
 
 def idle(c):
-    return svg(MIC.format(c=c))
+    return svg(mouth(c))
 
 
 def badge_disc(inner, c, mask_id):
-    """A filled disc with `inner` (drawn in black) knocked out."""
+    """A filled pill with `inner` (drawn in black) knocked out."""
     return f"""
-  <mask id="{mask_id}"><rect width="100" height="100" fill="white"/>{inner}</mask>
-  <circle cx="50" cy="50" r="48" fill="{c}" mask="url(#{mask_id})"/>"""
+  <mask id="{mask_id}"><rect y="20" width="100" height="60" fill="white"/>{inner}</mask>
+  <rect y="20" width="100" height="60" rx="30" fill="{c}" mask="url(#{mask_id})"/>"""
 
 
 def recording(c):
-    # Smaller mic knocked out of a disc.
-    mic = f'<g transform="translate(50 50) scale(0.74) translate(-50 -49)">{MIC.format(c="black")}</g>'
-    return svg(badge_disc(mic, c, "m"))
+    # Smaller mouth knocked out of a disc.
+    glyph = f'<g transform="translate(50 50) scale(0.72) translate(-50 -50)">{mouth("black")}</g>'
+    return svg(badge_disc(glyph, c, "m"))
 
 
 def transcribing(c):
@@ -53,42 +76,15 @@ def transcribing(c):
 
 
 def warning(c):
-    mic = f'<g transform="translate(-6 -4) scale(0.9)">{MIC.format(c=c)}</g>'
+    glyph = f'<g transform="translate(50 50) scale(0.85) translate(-50 -50)">{mouth(c)}</g>'
     body = f"""
-  <mask id="cut"><rect width="100" height="100" fill="white"/><circle cx="74" cy="74" r="27" fill="black"/></mask>
-  <g mask="url(#cut)">{mic}</g>
-  <mask id="bang"><rect width="100" height="100" fill="white"/>
-    <line x1="74" y1="62" x2="74" y2="77" stroke="black" stroke-width="7" stroke-linecap="round"/>
-    <circle cx="74" cy="86" r="4" fill="black"/></mask>
-  <circle cx="74" cy="74" r="22" fill="{c}" mask="url(#bang)"/>"""
+  <mask id="cut"><rect y="20" width="100" height="60" fill="white"/><circle cx="85" cy="66" r="19" fill="black"/></mask>
+  <g mask="url(#cut)">{glyph}</g>
+  <mask id="bang"><rect y="20" width="100" height="60" fill="white"/>
+    <line x1="85" y1="59" x2="85" y2="68" stroke="black" stroke-width="4.6" stroke-linecap="round"/>
+    <circle cx="85" cy="74" r="2.7" fill="black"/></mask>
+  <circle cx="85" cy="66" r="14.5" fill="{c}" mask="url(#bang)"/>"""
     return svg(body)
-
-
-def app_icon():
-    # macOS grid: 824px body inside a 1024px canvas, continuous-corner squircle.
-    glyph = f'<g transform="translate(512 500) scale(5.1) translate(-50 -50)">{MIC.format(c="white")}</g>'
-    bars = ""
-    for x, h in [(214, 120), (268, 220), (756, 220), (810, 120)]:
-        bars += f'<rect x="{x - 15}" y="{500 - h / 2}" width="30" height="{h}" rx="15" fill="white" opacity="0.55"/>'
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="{GRAD[0]}"/><stop offset="1" stop-color="{GRAD[1]}"/>
-    </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="white" stop-opacity="0.18"/><stop offset="0.5" stop-color="white" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#1e1b4b" flood-opacity="0.35"/>
-    </filter>
-  </defs>
-  <g filter="url(#shadow)">
-    <rect x="100" y="100" width="824" height="824" rx="186" fill="url(#bg)"/>
-    <rect x="100" y="100" width="824" height="824" rx="186" fill="url(#shine)"/>
-  </g>
-  {bars}
-  {glyph}
-</svg>"""
 
 
 variants = {
@@ -107,5 +103,4 @@ variants = {
 }
 for name, body in variants.items():
     (OUT / f"{name}.svg").write_text(body)
-(OUT / "app-icon.svg").write_text(app_icon())
-print(f"wrote {len(variants) + 1} SVGs to {OUT}")
+print(f"wrote {len(variants)} SVGs to {OUT}")
