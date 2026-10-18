@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SettingContainer } from "../ui/SettingContainer";
 import { ResetButton } from "../ui/ResetButton";
 import { useSettings } from "../../hooks/useSettings";
+import { useShowEndOfText } from "../../hooks/useShowEndOfText";
 import {
   getLanguageLabel,
   LANGUAGES,
@@ -49,6 +50,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  useShowEndOfText(searchInputRef, searchQuery);
 
   // The persisted *intent* (auto | code). What's actually used/shown is the
   // effective value resolved against the current model's capabilities.
@@ -143,10 +145,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
-            className={`px-2 py-1 text-sm font-semibold bg-mid-gray/10 border border-mid-gray/80 rounded min-w-[200px] text-start flex items-center justify-between transition-all duration-150 ${
+            className={`px-2 py-1 text-sm font-semibold bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl min-w-[200px] text-start flex items-center justify-between transition-all duration-150 ${
               isUpdating("selected_language")
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-logo-primary/10 cursor-pointer hover:border-logo-primary"
+                : "cursor-pointer hover:shadow-[0_0_0_1px_var(--color-logo-primary)]"
             }`}
             onClick={handleToggle}
             disabled={isUpdating("selected_language")}
@@ -170,9 +172,9 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           </button>
 
           {isOpen && !isUpdating("selected_language") && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-mid-gray/80 rounded shadow-lg z-50 max-h-60 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-background rounded-xl shadow-[inset_0_0_0_1px_var(--glass-hairline),var(--shadow-panel)] z-50 max-h-60 overflow-hidden">
               {/* Search input */}
-              <div className="p-2 border-b border-mid-gray/80">
+              <div className="p-2 border-b border-[color:var(--glass-hairline)]">
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -180,7 +182,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                   onChange={handleSearchChange}
                   onKeyDown={handleKeyDown}
                   placeholder={t("settings.general.language.searchPlaceholder")}
-                  className="w-full px-2 py-1 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded focus:outline-none focus:ring-1 focus:ring-logo-primary focus:border-logo-primary"
+                  className="w-full px-2 py-1 text-sm bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl focus:outline-none focus:shadow-[0_0_0_2px_var(--color-logo-primary)]"
                 />
               </div>
 
@@ -194,7 +196,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                     <button
                       key={language.value}
                       type="button"
-                      className={`w-full px-2 py-1 text-sm text-start hover:bg-logo-primary/10 transition-colors duration-150 ${
+                      className={`w-full px-2 py-1 text-sm text-start transition-colors duration-150 ${
                         selectedLanguage === language.value
                           ? "bg-logo-primary/20 text-logo-primary font-semibold"
                           : ""
@@ -217,7 +219,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         />
       </div>
       {isUpdating("selected_language") && (
-        <div className="absolute inset-0 bg-mid-gray/10 rounded flex items-center justify-center">
+        <div className="absolute inset-0 bg-mid-gray/10 rounded-xl flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-logo-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
