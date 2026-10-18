@@ -22,9 +22,13 @@ type ModelStatus =
 
 interface ModelSelectorProps {
   onError?: (error: string) => void;
+  variant?: "inline" | "panel";
 }
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
+const ModelSelector: React.FC<ModelSelectorProps> = ({
+  onError,
+  variant = "inline",
+}) => {
   const { t } = useTranslation();
   const {
     models,
@@ -242,11 +246,14 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
     return modelStatus;
   };
 
+  const panel = variant === "panel";
+
   return (
-    <>
+    <div className={panel ? "flex w-full flex-col gap-2" : "contents"}>
       {/* Model Status and Switcher */}
-      <div className="relative" ref={dropdownRef}>
+      <div className={panel ? "relative w-full" : "relative"} ref={dropdownRef}>
         <ModelStatusButton
+          variant={variant}
           status={getDisplayStatus()}
           displayText={getModelDisplayText()}
           isDropdownOpen={showModelDropdown}
@@ -267,8 +274,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onError }) => {
       <DownloadProgressDisplay
         downloadProgress={downloadProgress}
         downloadStats={downloadStats}
+        className={panel ? "w-full" : ""}
       />
-    </>
+    </div>
   );
 };
 
