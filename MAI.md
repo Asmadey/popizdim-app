@@ -61,7 +61,7 @@ cd src-tauri && cargo test --lib                            # все тесты,
 set -a; . ./.env; set +a; cd src-tauri
 MAI_TEST_WAV=/path/16k-mono.wav cargo test --lib live_openrouter -- --ignored --nocapture
 cargo test --lib live_tts -- --ignored --nocapture
-./target/debug/handy --transcribe-file file.wav --model cloud/openrouter/mai-transcribe-2 --json
+./target/debug/popizdim --transcribe-file file.wav --model cloud/openrouter/mai-transcribe-2 --json
 ```
 
 ## Ограничения
