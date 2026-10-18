@@ -81,7 +81,6 @@ export const TtsSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
-      <p className="px-4 text-sm text-mid-gray">{t("settings.tts.intro")}</p>
       {!cloud.openrouter_api_key && (
         <Alert variant="info">{t("settings.tts.keyMissing")}</Alert>
       )}
@@ -124,6 +123,12 @@ export const TtsSettings: React.FC = () => {
             options={TTS_SPEEDS}
           />
         </SettingContainer>
+        <div>
+          <ShortcutInput shortcutId="speak_selection" grouped={true} />
+          <p className="px-5 pb-3 text-xs text-mid-gray">
+            {t("settings.tts.selectionNote")}
+          </p>
+        </div>
         <SettingContainer
           title={t("settings.tts.try")}
           description={t("settings.tts.tryDescription")}
@@ -188,16 +193,6 @@ export const TtsSettings: React.FC = () => {
             </div>
           </div>
         </SettingContainer>
-      </SettingsGroup>
-
-      <SettingsGroup
-        title={t("settings.tts.shortcutGroup")}
-        description={t("settings.tts.shortcutGroupDescription")}
-      >
-        <ShortcutInput shortcutId="speak_selection" grouped={true} />
-        <p className="px-4 py-2 text-xs text-mid-gray">
-          {t("settings.tts.selectionNote")}
-        </p>
       </SettingsGroup>
     </div>
   );
