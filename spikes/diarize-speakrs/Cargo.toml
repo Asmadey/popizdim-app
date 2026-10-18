@@ -1,0 +1,13 @@
+[package]
+name = "diarize-speakrs-spike"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# Standalone spike (phase 1 of docs/plans/file-transcription.md): not part of
+# the app build. CoreML backend only — no ONNX Runtime, no network download.
+[dependencies]
+speakrs = { version = "0.6", default-features = false, features = ["coreml"] }
+hound = "3.5.1"
+
+[workspace]

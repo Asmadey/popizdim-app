@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <mask id="cut"><rect width="100" height="100" fill="white"/><circle cx="74" cy="74" r="27" fill="black"/></mask>
+  <g mask="url(#cut)"><g transform="translate(-6 -4) scale(0.9)">
+  <rect x="37" y="10" width="26" height="46" rx="13" fill="#6D6AF5"/>
+  <path d="M24 45 a26 26 0 0 0 52 0" fill="none" stroke="#6D6AF5" stroke-width="7.5" stroke-linecap="round"/>
+  <line x1="50" y1="72" x2="50" y2="84" stroke="#6D6AF5" stroke-width="7.5" stroke-linecap="round"/>
+  <line x1="37" y1="88" x2="63" y2="88" stroke="#6D6AF5" stroke-width="7.5" stroke-linecap="round"/>
+</g></g>
+  <mask id="bang"><rect width="100" height="100" fill="white"/>
+    <line x1="74" y1="62" x2="74" y2="77" stroke="black" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="74" cy="86" r="4" fill="black"/></mask>
+  <circle cx="74" cy="74" r="22" fill="#6D6AF5" mask="url(#bang)"/></svg>

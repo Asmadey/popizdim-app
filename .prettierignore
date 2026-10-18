@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+bun.lock
+package-lock.json
+
+# Build outputs
+dist
+target
+*.bundle.*
+
+# Tauri
+src-tauri/target
+src-tauri/gen
+
+# Generated files
+src/bindings.ts
+src-tauri/src/catalog/catalog.json
+
+# Misc
+.DS_Store
+*.log
+
+# Downloaded weights of local spikes (not in git)
+spikes/*/models

@@ -1,0 +1,17 @@
+(version 1)
+(allow default)
+; no network at all
+(deny network*)
+; home directory: no reads or writes except the Rust toolchain and this spike
+(deny file-read-data (subpath "/Users/asmadey"))
+(deny file-write* (subpath "/Users/asmadey"))
+(allow file-read-data
+  (subpath "/Users/asmadey/.rustup")
+  (subpath "/Users/asmadey/.cargo")
+  (subpath (param "SPIKE")))
+; cargo walks parent directories for project config files
+(allow file-read-data (regex #"/\.cargo/config(\.toml)?$"))
+(deny file-read-data (regex #"^/Users/asmadey/\.cargo/credentials"))
+(allow file-write*
+  (subpath (param "SPIKE"))
+  (regex #"^/Users/asmadey/\.cargo/\.package-cache"))
