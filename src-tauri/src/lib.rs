@@ -971,6 +971,19 @@ pub fn run(cli_args: CliArgs) {
                     .maximizable(true)
                     .visible(false);
 
+            // macOS: transparent window with native vibrancy, so the glass
+            // surfaces of the page blur whatever is behind the window
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::window::{Effect, EffectState, EffectsBuilder};
+                win_builder = win_builder.transparent(true).effects(
+                    EffectsBuilder::new()
+                        .effect(Effect::UnderWindowBackground)
+                        .state(EffectState::FollowsWindowActiveState)
+                        .build(),
+                );
+            }
+
             if let Some(data_dir) = portable::data_dir() {
                 win_builder = win_builder.data_directory(data_dir.join("webview"));
             }
