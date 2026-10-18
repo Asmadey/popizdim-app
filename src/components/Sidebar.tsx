@@ -154,9 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div
               key={section.id}
               className={`flex gap-2.5 items-center px-2 py-1.5 w-full rounded-[10px] cursor-pointer transition-colors ${
-                isActive
-                  ? "bg-text/10"
-                  : "hover:bg-text/5"
+                isActive ? "bg-text/10" : "hover:bg-text/5"
               }`}
               onClick={() => onSectionChange(section.id)}
             >
