@@ -17,7 +17,9 @@
     "model": "Model",
     "quit": "Çıkış",
     "cancel": "İptal",
-    "secureInputWarning": "⚠ Kısayollar Secure Input tarafından engelleniyor"
+    "secureInputWarning": "⚠ Kısayollar Secure Input tarafından engelleniyor",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "Genel",

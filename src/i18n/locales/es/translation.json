@@ -17,7 +17,9 @@
     "model": "Modelo",
     "quit": "Salir",
     "cancel": "Cancelar",
-    "secureInputWarning": "⚠ Atajos bloqueados por Secure Input"
+    "secureInputWarning": "⚠ Atajos bloqueados por Secure Input",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "General",

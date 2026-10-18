@@ -18,7 +18,9 @@
     "model": "Модель",
     "quit": "Выход",
     "cancel": "Отмена",
-    "secureInputWarning": "⚠ Сочетания клавиш заблокированы Secure Input"
+    "secureInputWarning": "⚠ Сочетания клавиш заблокированы Secure Input",
+    "postProcessing": "Постобработка",
+    "postProcessOff": "Выкл."
   },
   "sidebar": {
     "general": "Общие",

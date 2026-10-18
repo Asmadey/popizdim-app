@@ -17,7 +17,9 @@
     "model": "Model",
     "quit": "Afsluiten",
     "cancel": "Annuleren",
-    "secureInputWarning": "⚠ Sneltoetsen geblokkeerd door Secure Input"
+    "secureInputWarning": "⚠ Sneltoetsen geblokkeerd door Secure Input",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "Algemeen",

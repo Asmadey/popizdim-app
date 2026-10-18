@@ -1116,6 +1116,31 @@ pub fn change_post_process_enabled_setting(app: AppHandle, enabled: bool) -> Res
     settings.post_process_enabled = enabled;
     settings::write_settings(&app, settings.clone());
     sync_post_process_shortcut(&app, &settings);
+    tray::update_tray_menu(&app);
+    Ok(())
+}
+
+/// Tray "Post-processing" dropdown: `None` turns post-processing off, `Some(id)`
+/// selects that prompt and turns it on. The settings window is told to reload.
+pub fn set_post_process_mode(app: &AppHandle, prompt_id: Option<&str>) -> Result<(), String> {
+    let mut settings = settings::get_settings(app);
+    match prompt_id {
+        None => settings.post_process_enabled = false,
+        Some(id) => {
+            if !settings.post_process_prompts.iter().any(|p| p.id == id) {
+                return Err(format!("Prompt with id '{}' not found", id));
+            }
+            settings.post_process_selected_prompt_id = Some(id.to_string());
+            settings.post_process_enabled = true;
+        }
+    }
+    settings::write_settings(app, settings.clone());
+    sync_post_process_shortcut(app, &settings);
+    tray::update_tray_menu(app);
+    let _ = app.emit(
+        "settings-changed",
+        serde_json::json!({ "setting": "post_process_enabled" }),
+    );
     Ok(())
 }
 
@@ -1262,6 +1287,7 @@ pub fn add_post_process_prompt(
 
     settings.post_process_prompts.push(new_prompt.clone());
     settings::write_settings(&app, settings);
+    tray::update_tray_menu(&app);
 
     Ok(new_prompt)
 }
@@ -1284,6 +1310,7 @@ pub fn update_post_process_prompt(
         existing_prompt.name = name;
         existing_prompt.prompt = prompt;
         settings::write_settings(&app, settings);
+        tray::update_tray_menu(&app);
         Ok(())
     } else {
         Err(format!("Prompt with id '{}' not found", id))
@@ -1315,6 +1342,7 @@ pub fn delete_post_process_prompt(app: AppHandle, id: String) -> Result<(), Stri
     }
 
     settings::write_settings(&app, settings);
+    tray::update_tray_menu(&app);
     Ok(())
 }
 
@@ -1375,6 +1403,7 @@ pub fn set_post_process_selected_prompt(app: AppHandle, id: String) -> Result<()
 
     settings.post_process_selected_prompt_id = Some(id);
     settings::write_settings(&app, settings);
+    tray::update_tray_menu(&app);
     Ok(())
 }
 

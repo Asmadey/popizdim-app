@@ -18,7 +18,9 @@
     "model": "Model",
     "quit": "Quit",
     "cancel": "Cancel",
-    "secureInputWarning": "⚠ Shortcuts blocked by Secure Input"
+    "secureInputWarning": "⚠ Shortcuts blocked by Secure Input",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "General",

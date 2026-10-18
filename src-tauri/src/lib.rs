@@ -318,6 +318,17 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                     actions::speak_selection(app, std::time::Duration::from_millis(150));
                 }
             }
+            "post_process_off" => {
+                if let Err(e) = shortcut::set_post_process_mode(app, None) {
+                    log::error!("Failed to turn post-processing off via tray: {}", e);
+                }
+            }
+            id if id.starts_with("post_process_prompt:") => {
+                let prompt_id = id.strip_prefix("post_process_prompt:").unwrap();
+                if let Err(e) = shortcut::set_post_process_mode(app, Some(prompt_id)) {
+                    log::error!("Failed to select post-processing prompt via tray: {}", e);
+                }
+            }
             "unload_model" => {
                 let transcription_manager = app.state::<Arc<TranscriptionManager>>();
                 if !transcription_manager.is_model_loaded() {

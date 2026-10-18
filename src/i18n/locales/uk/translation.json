@@ -17,7 +17,9 @@
     "model": "Модель",
     "quit": "Вийти",
     "cancel": "Скасувати",
-    "secureInputWarning": "⚠ Комбінації клавіш заблоковано Secure Input"
+    "secureInputWarning": "⚠ Комбінації клавіш заблоковано Secure Input",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "Загальні",
