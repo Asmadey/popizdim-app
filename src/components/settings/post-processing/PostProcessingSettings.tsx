@@ -447,9 +447,7 @@ export const PostProcessingSettings: React.FC = () => {
       </SettingsGroup>
 
       <div
-        className={`space-y-6 transition-opacity ${
-          enabled ? "" : "opacity-50 pointer-events-none select-none"
-        }`}
+        className={`space-y-6 ${enabled ? "" : "settings-dimmed"}`}
         aria-disabled={!enabled}
         {...inertWhenOff}
       >

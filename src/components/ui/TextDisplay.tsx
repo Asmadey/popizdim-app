@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { SettingContainer } from "./SettingContainer";
+import { useShowEndOfText } from "../../hooks/useShowEndOfText";
 
 interface TextDisplayProps {
   label: string;
@@ -25,6 +26,8 @@ export const TextDisplay: React.FC<TextDisplayProps> = ({
   onCopy,
 }) => {
   const [showCopied, setShowCopied] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
+  useShowEndOfText(textRef, value);
 
   const handleCopy = async () => {
     if (!value || !copyable) return;
@@ -42,7 +45,7 @@ export const TextDisplay: React.FC<TextDisplayProps> = ({
   };
 
   const displayValue = value || placeholder;
-  const textClasses = monospace ? "font-mono break-all" : "break-words";
+  const textClasses = monospace ? "font-mono" : "";
 
   return (
     <SettingContainer
@@ -55,15 +58,17 @@ export const TextDisplay: React.FC<TextDisplayProps> = ({
       <div className="flex items-center space-x-2">
         <div className="flex-1 min-w-0">
           <div
-            className={`px-2 min-h-8 flex items-center bg-mid-gray/10 border border-mid-gray/80 rounded-md text-xs ${textClasses} ${!value ? "opacity-60" : ""}`}
+            ref={textRef}
+            title={value}
+            className={`px-3 min-h-8 flex items-center whitespace-nowrap overflow-x-hidden bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl text-xs ${textClasses} ${!value ? "opacity-60" : ""}`}
           >
-            {displayValue}
+            <span className="whitespace-nowrap">{displayValue}</span>
           </div>
         </div>
         {copyable && value && (
           <button
             onClick={handleCopy}
-            className="flex items-center justify-center px-2 py-1 w-12 min-h-8 text-xs font-semibold bg-mid-gray/10 hover:bg-logo-primary/10 border border-mid-gray/80 hover:border-logo-primary hover:text-logo-primary rounded-md transition-all duration-150 flex-shrink-0 cursor-pointer"
+            className="flex items-center justify-center px-2 py-1 w-12 min-h-8 text-xs font-semibold bg-mid-gray/10 border border-mid-gray/80 hover:shadow-[0_0_0_1px_var(--color-logo-primary)] hover:text-logo-primary rounded-xl transition-all duration-150 flex-shrink-0 cursor-pointer"
             title="Copy to clipboard"
           >
             {showCopied ? (

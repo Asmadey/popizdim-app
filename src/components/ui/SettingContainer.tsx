@@ -47,9 +47,7 @@ export const SettingContainer: React.FC<SettingContainerProps> = ({
     setShowTooltip(!showTooltip);
   };
 
-  const containerClasses = grouped
-    ? "px-4 p-2"
-    : "px-4 p-2 rounded-lg border border-mid-gray/20";
+  const containerClasses = grouped ? "px-5 py-3" : "px-5 py-3 glass-card";
 
   if (layout === "stacked") {
     if (descriptionMode === "tooltip") {
