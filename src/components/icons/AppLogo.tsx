@@ -42,7 +42,7 @@ export const AppWordmark = ({
   height = 20,
   className,
 }: {
-  height?: number;
+  height?: number | string;
   className?: string;
 }) => (
   <svg
