@@ -21,7 +21,7 @@
 
 **Речь в текст (STT / Speech-to-Text) —** зажмите и говорите — текст появится в поле, где стоит курсор. Можно распознавать и готовые записи: любой аудио- или видеофайл, с подписью, кто и когда говорил (диаризация).
 
-**Текст в речь (TTS / Text-to-Speech) —** выделите текст → нажмите сочетание клавиш → приложение прочитает его вслух RU/EN голосом от <a href="https://ai.azure.com/catalog/models/MAI-Voice-2.1">MAI-Voice-2.1</a>. Длинный текст озвучивается потоком: начало звучит, пока синтезируется продолжение.
+**Текст в речь (TTS / Text-to-Speech) —** выделите текст → нажмите кнопку → приложение прочитает RU/EN голосом от <a href="https://ai.azure.com/catalog/models/MAI-Voice-2.1">MAI-Voice-2.1</a>. Длинный текст озвучивается потоком: начало звучит, пока синтезируется продолжение.
 
 ## Возможности
 
@@ -103,15 +103,15 @@
 - **Словарь**: имена, бренды, термины. Быстрее всего добавлять их из меню иконки: «Добавить в словарь».
 - **Постобработка**: включите переключатель вверху, выберите поставщика, модель и запрос. По умолчанию она работает на обычной клавише диктовки; отдельное сочетание включается переключателем ниже.
 - **Продвинутые → Подписи говорящих**: включить или выключить диаризацию для файлов.
-- **Общие → Горячая клавиша**: по умолчанию `Option+Space`. Удерживайте для записи или нажмите один раз, чтобы переключить режим.
+- **Общие → Горячая клавиша**: `Option+Space`. Удерживайте для записи или нажмите один раз
 
-Ключи хранятся только локально в настройках приложения (`~/Library/Application Support/com.popizdim.desktop/`). В сборке их нет. При первом запуске настройки, история и записи прежней версии переносятся из `com.maidictate.desktop` автоматически.
+Ключи хранятся только локально в настройках приложения (`~/Library/Application Support/com.popizdim.desktop/`)
 
 ---
 
 ## English
 
-**Popizdim** ("Попиздим — speech to text") is a macOS app that turns your voice into text and text into speech, using Microsoft's MAI cloud models and open local models.
+**Popizdim** is a macOS app that turns your voice into text and text into speech, using Microsoft's MAI cloud models and open local models.
 
 - **Speech-to-text:** press a shortcut, speak, and the text is typed into whatever app has focus.
   - **MAI-Transcribe-2-Streaming** (Azure Foundry): true streaming over the Realtime WebSocket API, live text while you speak.
