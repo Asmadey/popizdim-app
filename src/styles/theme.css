@@ -67,11 +67,22 @@
   --color-error: var(--light-color-error);
 }
 
-:root[data-theme="dark"] {
+/* Onboarding is always dark, whatever the system theme: its illustrations are
+   drawn on the dark palette, so a light page would make them clash.
+   App.tsx sets data-onboarding-active while any onboarding step is shown. */
+:root[data-theme="dark"],
+:root[data-onboarding-active] {
   --color-text: var(--dark-color-text);
   --color-background: var(--dark-color-background);
   --color-logo-primary: var(--dark-color-logo-primary);
   --color-logo-stroke: var(--dark-color-logo-stroke);
   --color-warning: var(--dark-color-warning);
   --color-error: var(--dark-color-error);
+}
+
+/* Onboarding accent is blue, matching the toggles and controls of the app
+   (the red stays reserved for the logo). Declared after the dark palette
+   above so it overrides --color-logo-primary there. */
+:root[data-onboarding-active] {
+  --color-logo-primary: #4088eb;
 }
