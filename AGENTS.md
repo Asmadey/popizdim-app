@@ -213,6 +213,5 @@ See the [Troubleshooting](README.md#troubleshooting) section in README.md.
 - **Opening an issue:** Read [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/). Blank issues are disabled; pick the right template (`bug_report.md` for bugs). Feature requests do not belong in issues — they go to [Discussions](https://github.com/Asmadey/popizdim-app/discussions) (see `.github/ISSUE_TEMPLATE/config.yml`).
 - **Proposing a feature:** Popizdim is under a feature freeze. New features require community support gathered in [Discussions](https://github.com/Asmadey/popizdim-app/discussions) before any PR is opened — see the PR template's "Community Feedback" section.
 - **Translations:** Follow [CONTRIBUTING_TRANSLATIONS.md](CONTRIBUTING_TRANSLATIONS.md).
-- **Full contributor workflow:** [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Commits:** Use conventional commit prefixes (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`). Focus the message on _why_, not _what_.
