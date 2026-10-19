@@ -6,7 +6,7 @@ fn main() {
 
     // Linux ships transcribe-cpp as a shared libtranscribe + loadable ggml
     // backend modules (the `dynamic-backends` posture in Cargo.toml). Bake an
-    // $ORIGIN-relative rpath into the `handy` binary so it finds libtranscribe
+    // $ORIGIN-relative rpath into the `popizdim` binary so it finds libtranscribe
     // next to it in the package — deb/rpm install into the app-private
     // `/usr/lib/Handy` (the dir tauri already uses for resources; keeps
     // Handy's libs out of the ldconfig-scanned `/usr/lib`, issue #1639) while
@@ -40,7 +40,7 @@ fn main() {
 /// Stage the MSVC runtime DLLs into `transcribe-libs/` for app-local deployment.
 ///
 /// Handy's native stack links the VC++ runtime dynamically (/MD). Shipping the
-/// DLLs beside `handy.exe` covers machines with no redistributable installed and
+/// DLLs beside `popizdim.exe` covers machines with no redistributable installed and
 /// machines whose system redist is older than the CI toolset (issue #1527).
 ///
 /// Driven by `HANDY_VC_REDIST_DIRS`, set by CI to the redist dirs from the same
@@ -159,7 +159,7 @@ fn stage_onnxruntime_dll() {
 /// this is a no-op there. `RUNTIME_DIR` (core libs) and `MODULE_DIR` (dlopen'd
 /// ggml modules) may be the same dir — the `BTreeSet` below dedups them.
 ///
-/// Where the staged dir lands: Windows bundles it beside `handy.exe` (DLLs resolve
+/// Where the staged dir lands: Windows bundles it beside `popizdim.exe` (DLLs resolve
 /// from the exe dir); Linux deb/rpm map it into the app-private `/usr/lib/Handy`
 /// and the AppImage into `usr/lib`, both on the binary's rpath.
 fn stage_transcribe_runtime_libs() {

@@ -17,7 +17,9 @@
     "model": "Модел",
     "quit": "Изход",
     "cancel": "Отказ",
-    "secureInputWarning": "⚠ Бързите клавиши са блокирани от Secure Input"
+    "secureInputWarning": "⚠ Бързите клавиши са блокирани от Secure Input",
+    "postProcessing": "Post-processing",
+    "postProcessOff": "Off"
   },
   "sidebar": {
     "general": "Общи",

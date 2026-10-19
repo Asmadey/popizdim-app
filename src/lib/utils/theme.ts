@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { commands, type Theme } from "@/bindings";
 
 /**
@@ -23,6 +24,27 @@ export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
 const isTheme = (value: unknown): value is Theme =>
   value === "system" || value === "light" || value === "dark";
 
+/**
+ * WebKit keeps stale text colors in composited layers (backdrop-filter panels)
+ * when the palette changes at runtime, leaving e.g. black labels on a dark
+ * sidebar until restart. Dropping the root out of layout for one frame forces
+ * a full repaint.
+ */
+const forceRepaint = (): void => {
+  const root = document.documentElement;
+  root.style.display = "none";
+  void root.offsetHeight;
+  root.style.display = "";
+};
+
+// With the "system" theme the palette flips when the OS (or the native window
+// theme set below) changes, which can land after our own repaint.
+if (typeof window !== "undefined" && window.matchMedia) {
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", forceRepaint);
+}
+
 /** Apply a theme to the document root and remember it for the next launch. */
 export const applyTheme = (theme: Theme): void => {
   const root = document.documentElement;
@@ -31,6 +53,15 @@ export const applyTheme = (theme: Theme): void => {
   } else {
     root.dataset.theme = theme;
   }
+  // Keep the native window material (vibrancy) in step with the chosen theme
+  forceRepaint();
+  getCurrentWindow()
+    .setTheme(theme === "system" ? null : theme)
+    .then(() => {
+      requestAnimationFrame(forceRepaint);
+      window.setTimeout(forceRepaint, 300);
+    })
+    .catch(() => {});
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {

@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "./styles/theme.css";
 
+/* Inter Variable (SIL OFL 1.1, see assets/fonts/LICENSE-Inter.txt) */
+@font-face {
+  font-family: "InterVariable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/InterVariable.woff2") format("woff2");
+}
+
 /* Register the shared color tokens (src/styles/theme.css) as Tailwind
    utilities */
 @theme inline {
@@ -9,6 +18,8 @@
   --color-background-ui: var(--color-background-ui);
   --color-logo-primary: var(--color-logo-primary);
   --color-logo-stroke: var(--color-logo-stroke);
+  --color-brand: var(--color-brand);
+  --color-brand-stroke: var(--color-brand-stroke);
   --color-text-stroke: var(--color-text-stroke);
   --color-mid-gray: var(--color-mid-gray);
   --color-warning: var(--color-warning);
@@ -17,6 +28,17 @@
 
 :root {
   /* Typography */
+  font-family:
+    "InterVariable",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1,
+    "kern" 1,
+    "ss03" 1;
   font-size: 15px;
   line-height: 24px;
   font-weight: 400;
@@ -40,9 +62,96 @@
      block (matching other surfaces); the dark theme overrides it below. */
   --color-log-surface: color-mix(in srgb, var(--color-background), black 6%);
 
+  /* Strength of the two soft tinted glows behind the glass panels */
+  --page-glow-a: 16%;
+  --page-glow-b: 10%;
+
+  /* Radii, shadows and glass surfaces */
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+  --glass-blur: blur(28px) saturate(1.5);
+  --glass-card-bg: color-mix(in srgb, var(--color-text) 3.5%, transparent);
+  --glass-panel-bg: color-mix(
+    in srgb,
+    var(--color-background) 62%,
+    transparent
+  );
+  --glass-hairline: color-mix(in srgb, var(--color-text) 7%, transparent);
+  --field-bg: color-mix(in srgb, var(--color-text) 5%, transparent);
+  --field-ring: color-mix(in srgb, var(--color-text) 16%, transparent);
+  --shadow-card:
+    0 1px 1px -1px #0000000d, 0 4px 2px -3px #0000000d,
+    0 8px 4px -6px #0000000d, 0 12px 40px -12px #0000001a;
+  --shadow-panel:
+    0 1px 1px -1px #0000000d, 0 4px 2px -3px #0000000d,
+    0 8px 4px -6px #0000000d, 0 12px 40px -12px #0000001a,
+    0 24px 64px -24px #00000033;
+
   /* Apply colors */
   color: var(--color-text);
   background-color: var(--color-background);
+}
+
+/* macOS: an opaque page. A see-through root (native vibrancy behind it) made
+   every element with `opacity` (the dimmed, inert settings groups) render as a
+   mismatched translucent rectangle. The glass panels blur these soft tinted
+   gradients instead, which keeps the frosted look without any transparency. */
+:root[data-platform="macos"],
+:root[data-platform="macos"] body {
+  background-color: var(--color-background);
+  background-image:
+    radial-gradient(
+      55% 45% at 0% 0%,
+      color-mix(
+        in srgb,
+        var(--color-background-ui) var(--page-glow-a),
+        transparent
+      ),
+      transparent
+    ),
+    radial-gradient(
+      50% 40% at 100% 100%,
+      color-mix(in srgb, var(--color-brand) var(--page-glow-b), transparent),
+      transparent
+    );
+  background-attachment: fixed;
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--glass-panel-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    box-shadow:
+      inset 0 0 0 1px var(--glass-hairline),
+      var(--shadow-panel);
+    border-radius: var(--radius-panel);
+  }
+  /* no backdrop-filter here: it would make every card its own stacking context
+     and later cards would paint over dropdown menus opened in earlier ones */
+  .glass-card {
+    background: var(--glass-card-bg);
+    box-shadow: inset 0 0 0 0.5px var(--glass-hairline);
+    border-radius: var(--radius-card);
+  }
+  /* Greyed-out, inert settings. Only the row contents and group titles fade;
+     the card backgrounds stay as they are. Fading a wrapper that contains the
+     cards (opacity on an ancestor of translucent backgrounds) rendered a
+     mismatched lighter rectangle over them. */
+  .settings-dimmed {
+    pointer-events: none;
+    user-select: none;
+  }
+  .settings-dimmed .glass-card > div > *,
+  .settings-dimmed .group-header {
+    opacity: 0.5;
+  }
+  .field-surface {
+    background: var(--field-bg);
+    box-shadow: 0 0 0 1px var(--field-ring);
+    border-radius: var(--radius-control);
+  }
 }
 
 .container {
@@ -100,13 +209,25 @@
 }
 
 .logo-primary {
-  fill: var(--color-logo-primary);
+  fill: var(--color-brand);
 }
 
 .logo-stroke {
-  fill: var(--color-logo-stroke);
-  stroke: var(--color-logo-stroke);
+  fill: var(--color-brand-stroke);
+  stroke: var(--color-brand-stroke);
   stroke-width: 1;
+}
+
+/* Dark: an even navy page, no red glow */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page-glow-a: 6%;
+    --page-glow-b: 0%;
+  }
+}
+:root[data-theme="dark"] {
+  --page-glow-a: 6%;
+  --page-glow-b: 0%;
 }
 
 /* Welcome tour: each slide eases in when it mounts.

@@ -11,6 +11,19 @@ import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 
+const AUTHOR_LINKS = [
+  {
+    labelKey: "settings.about.author.telegram",
+    text: "https://t.me/AImademyday",
+    url: "https://t.me/AImademyday",
+  },
+  {
+    labelKey: "settings.about.author.site",
+    text: "proshinsky.com",
+    url: "https://proshinsky.com",
+  },
+] as const;
+
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
   const [version, setVersion] = useState("");
@@ -63,17 +76,24 @@ export const AboutSettings: React.FC = () => {
         <LogDirectory grouped={true} />
       </SettingsGroup>
 
-      <SettingsGroup title={t("settings.about.acknowledgments.title")}>
-        <SettingContainer
-          title={t("settings.about.acknowledgments.ggml.title")}
-          description={t("settings.about.acknowledgments.ggml.description")}
-          grouped={true}
-          layout="stacked"
-        >
-          <div className="text-sm text-mid-gray">
-            {t("settings.about.acknowledgments.ggml.details")}
-          </div>
-        </SettingContainer>
+      <SettingsGroup title={t("settings.about.author.title")}>
+        <div className="flex flex-col gap-3 px-5 py-3">
+          <h3 className="text-sm font-medium">
+            {t("settings.about.author.name")}
+          </h3>
+          {AUTHOR_LINKS.map((link) => (
+            <div key={link.url} className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-mid-gray">{t(link.labelKey)}:</span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => openUrl(link.url)}
+              >
+                {link.text}
+              </Button>
+            </div>
+          ))}
+        </div>
       </SettingsGroup>
     </div>
   );
