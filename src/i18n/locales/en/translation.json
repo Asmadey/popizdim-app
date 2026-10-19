@@ -122,6 +122,7 @@
       "selectModel": "Failed to select model"
     },
     "permissions": {
+      "tag": "Permissions",
       "title": "Permissions Required",
       "description": "Popizdim needs a couple of permissions to work properly.",
       "microphone": {
@@ -132,6 +133,14 @@
         "title": "Accessibility Access",
         "description": "Required to type transcribed text into your applications."
       },
+      "model": {
+        "title": "Transcription model",
+        "description": "Pick your dictation language. Russian uses GigaAM, English uses Parakeet; downloaded once, works offline.",
+        "russian": "Russian",
+        "english": "English",
+        "downloading": "Downloading {{percent}}%",
+        "preparing": "Preparing…"
+      },
       "grant": "Grant Permission",
       "granted": "Granted",
       "waiting": "Waiting...",
@@ -139,6 +148,50 @@
       "errors": {
         "checkFailed": "Failed to check permissions. Please try again.",
         "requestFailed": "Failed to request permission. Please try again."
+      }
+    },
+    "welcome": {
+      "start": "Get Started",
+      "next": "Continue",
+      "goToSlide": "Go to screen {{number}}",
+      "slides": {
+        "welcome": {
+          "title": "Speak. Popizdim types.",
+          "description": "Popizdim turns your voice into text in any app. Let's show you around and get you set up."
+        },
+        "dictation": {
+          "title": "Dictate in any app",
+          "description": "Hold your shortcut and speak — the text appears right at your cursor. 60 languages, including mixed speech."
+        },
+        "models": {
+          "title": "Cloud or offline",
+          "description": "Microsoft MAI cloud models for speed and accuracy; GigaAM for Russian and Parakeet for English run fully offline — your audio stays on your computer."
+        },
+        "vocabulary": {
+          "title": "Knows your words",
+          "description": "Add names, brands and terms so they are always spelled right. Filler words and \"uh\"s disappear on their own."
+        },
+        "polish": {
+          "title": "The right tone, instantly",
+          "description": "Post-processing with a language model fixes punctuation and makes your text professional or polite — on the same shortcut."
+        },
+        "speak": {
+          "title": "Hear any text",
+          "description": "Select text in any app and Microsoft MAI-Voice reads it aloud with a single shortcut. Pick a voice and speed, save as MP3."
+        },
+        "files": {
+          "title": "Transcribe recordings",
+          "description": "Pick any audio or video file and get a transcript with timestamps and speaker labels."
+        }
+      },
+      "back": "Back",
+      "tags": {
+        "dictation": "Dictation",
+        "models": "Models",
+        "vocabulary": "Vocabulary",
+        "polish": "Polish",
+        "speak": "Read aloud",
+        "files": "Recordings"
       }
     }
   },
@@ -560,6 +613,7 @@
       "onboardingPreview": {
         "title": "Preview Onboarding",
         "description": "Preview onboarding screens without changing permissions, models, or completion state",
+        "welcomeButton": "Welcome",
         "permissionsButton": "Permissions",
         "modelsButton": "Model Selection",
         "exitButton": "Exit Preview"

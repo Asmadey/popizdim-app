@@ -18,7 +18,10 @@ import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import SecureInputWarning from "./components/SecureInputWarning";
 import Footer from "./components/footer";
-import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
+import Onboarding, {
+  AccessibilityOnboarding,
+  WelcomeTour,
+} from "./components/onboarding";
 import {
   DebugSettings,
   type OnboardingPreviewStep,
@@ -31,7 +34,7 @@ import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
-type OnboardingStep = "accessibility" | "model" | "done";
+type OnboardingStep = "welcome" | "accessibility" | "model" | "done";
 
 // Stable identity so preview effects do not re-run due to callback changes.
 const NOOP = () => {};
@@ -54,6 +57,7 @@ function App() {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep | null>(
     null,
   );
+  const [tourStartAtEnd, setTourStartAtEnd] = useState(false);
   const [onboardingPreview, setOnboardingPreview] =
     useState<OnboardingPreviewStep | null>(null);
   // Track if this is a returning user who just needs to grant permissions
@@ -73,6 +77,7 @@ function App() {
   const settingsScrollRef = useRef<HTMLDivElement>(null);
   const isShowingOnboarding =
     onboardingPreview !== null ||
+    onboardingStep === "welcome" ||
     onboardingStep === "accessibility" ||
     onboardingStep === "model";
 
@@ -283,9 +288,9 @@ function App() {
 
         setOnboardingStep("done");
       } else {
-        // New user - start full onboarding
+        // New user - start full onboarding with the welcome tour
         setIsReturningUser(false);
-        setOnboardingStep("accessibility");
+        setOnboardingStep("welcome");
       }
     } catch (error) {
       console.error("Failed to check onboarding status:", error);
@@ -293,10 +298,20 @@ function App() {
     }
   };
 
-  const handleAccessibilityComplete = () => {
+  const handleWelcomeComplete = () => {
+    setOnboardingStep("accessibility");
+  };
+
+  // Back from the permissions step reopens the tour on its last slide
+  const handlePermissionsBack = () => {
+    setOnboardingStep("welcome");
+    setTourStartAtEnd(true);
+  };
+
+  const handleAccessibilityComplete = (modelSelected = false) => {
     // Returning users already have models, skip to main app
     // New users need to select a model
-    setOnboardingStep(isReturningUser ? "done" : "model");
+    setOnboardingStep(isReturningUser || modelSelected ? "done" : "model");
   };
 
   const handleModelSelected = () => {
@@ -341,8 +356,15 @@ function App() {
     // as it does during first-run onboarding.
     content = (
       <>
-        {onboardingPreview === "accessibility" ? (
-          <AccessibilityOnboarding onComplete={NOOP} preview />
+        {onboardingPreview === "welcome" ? (
+          <WelcomeTour onComplete={NOOP} />
+        ) : onboardingPreview === "accessibility" ? (
+          <AccessibilityOnboarding
+            onComplete={NOOP}
+            withModelChoice
+            onBack={NOOP}
+            preview
+          />
         ) : (
           <Onboarding onModelSelected={NOOP} preview />
         )}
@@ -355,9 +377,20 @@ function App() {
         </button>
       </>
     );
+  } else if (onboardingStep === "welcome") {
+    content = (
+      <WelcomeTour
+        onComplete={handleWelcomeComplete}
+        startAtEnd={tourStartAtEnd}
+      />
+    );
   } else if (onboardingStep === "accessibility") {
     content = (
-      <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />
+      <AccessibilityOnboarding
+        onComplete={handleAccessibilityComplete}
+        withModelChoice={!isReturningUser}
+        onBack={isReturningUser ? undefined : handlePermissionsBack}
+      />
     );
   } else if (onboardingStep === "model") {
     content = <Onboarding onModelSelected={handleModelSelected} />;
