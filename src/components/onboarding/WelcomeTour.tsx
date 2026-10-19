@@ -159,14 +159,18 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({
               </p>
             </div>
 
-            <div className="relative flex items-center justify-center bg-background pb-24 pt-2">
+            <div className="relative flex items-center justify-center bg-background">
               {illustration ? (
+                // Absolutely placed with an explicit height: a percentage
+                // height on a flex child resolves to auto here, so the picture
+                // kept its natural height and slid under the Next button.
+                // 6.5rem = 0.5rem top gap + the nav bar (button + padding).
                 <img
                   src={illustration}
                   alt=""
                   draggable={false}
                   style={ILLUSTRATION_MASK}
-                  className="h-full w-full object-cover object-[50%_70%]"
+                  className="absolute inset-x-0 top-2 h-[calc(100%-6.5rem)] w-full object-contain"
                 />
               ) : (
                 Icon && (
