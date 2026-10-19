@@ -118,7 +118,7 @@ This compiles a release binary and generates platform-specific bundles (deb, rpm
 
 ## Linux Install (from source)
 
-The raw binary (`src-tauri/target/release/handy`) cannot run standalone — it needs Tauri resource files (tray icons, sounds, VAD model) to be co-located at the expected path.
+The raw binary (`src-tauri/target/release/popizdim`) cannot run standalone — it needs Tauri resource files (tray icons, sounds, VAD model) to be co-located at the expected path.
 
 **Install from the deb bundle** (works on any Linux distro):
 
@@ -126,7 +126,7 @@ The raw binary (`src-tauri/target/release/handy`) cannot run standalone — it n
 cd /tmp
 ar x /path/to/Popizdim/src-tauri/target/release/bundle/deb/Handy_*_amd64.deb data.tar.gz
 tar xzf data.tar.gz
-sudo cp usr/bin/handy /usr/bin/
+sudo cp usr/bin/popizdim /usr/bin/
 sudo cp -a usr/lib/. /usr/lib/
 sudo cp -r usr/share/icons/hicolor/* /usr/share/icons/hicolor/
 sudo cp usr/share/applications/Popizdim.desktop /usr/share/applications/
@@ -137,7 +137,7 @@ The runtime libraries live in the app-private `/usr/lib/Popizdim/` (on the binar
 After subsequent rebuilds, copy the binary and any refreshed runtime libraries:
 
 ```bash
-sudo cp src-tauri/target/release/handy /usr/bin/
+sudo cp src-tauri/target/release/popizdim /usr/bin/
 sudo mkdir -p /usr/lib/Popizdim
 sudo cp -a src-tauri/transcribe-libs/. /usr/lib/Popizdim/
 ```
@@ -260,11 +260,11 @@ and `bun run tauri build` work normally.
 
 ### Windows `tauri build` fails at bundling with `program not found`
 
-If the build compiles all the way to `Built application at: ...\handy.exe` and
+If the build compiles all the way to `Built application at: ...\popizdim.exe` and
 then fails with:
 
 ```
-Signing C:\...\handy.exe with a custom signing command
+Signing C:\...\popizdim.exe with a custom signing command
 failed to bundle project `program not found`
 ```
 

@@ -85,6 +85,10 @@ struct MenuInputs {
     /// The speak-selection shortcut as a menu accelerator, shown in grey next
     /// to "Speak Text"; `None` when it can't be expressed as one.
     speak_accelerator: Option<String>,
+    post_process_enabled: bool,
+    /// `(id, name)` of the post-processing prompts, in settings order.
+    post_process_prompts: Vec<(String, String)>,
+    post_process_selected_prompt_id: Option<String>,
 }
 
 /// Complete description of what the tray should look like.
@@ -380,6 +384,13 @@ fn compute_desired(
                 .bindings
                 .get("speak_selection")
                 .and_then(|b| binding_accelerator(&b.current_binding)),
+            post_process_enabled: settings.post_process_enabled,
+            post_process_prompts: settings
+                .post_process_prompts
+                .iter()
+                .map(|p| (p.id.clone(), p.name.clone()))
+                .collect(),
+            post_process_selected_prompt_id: settings.post_process_selected_prompt_id,
         },
         progress,
     }
@@ -677,6 +688,8 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<Menu<tauri:
     let quit_i = MenuItem::with_id(app, "quit", &strings.quit, true, quit_accelerator)?;
     let separator = || PredefinedMenuItem::separator(app);
 
+    let post_process_submenu = build_post_process_submenu(app, inputs, &strings)?;
+
     let menu = if inputs.busy {
         let cancel_i = MenuItem::with_id(app, "cancel", &strings.cancel, true, None::<&str>)?;
         Menu::with_items(
@@ -690,6 +703,7 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<Menu<tauri:
                 &transcribe_file_i,
                 &speak_text_i,
                 &copy_last_transcript_i,
+                &post_process_submenu,
                 &separator()?,
                 &settings_i,
                 &check_updates_i,
@@ -731,6 +745,7 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<Menu<tauri:
                 &transcribe_file_i,
                 &speak_text_i,
                 &copy_last_transcript_i,
+                &post_process_submenu,
                 &separator()?,
                 &model_submenu,
                 &unload_model_i,
@@ -761,6 +776,55 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<Menu<tauri:
     }
 
     Ok(menu)
+}
+
+/// The prompt the "Post-processing" dropdown shows as active: `None` when
+/// post-processing is off or the selected prompt no longer exists.
+fn active_post_process_prompt(inputs: &MenuInputs) -> Option<&(String, String)> {
+    if !inputs.post_process_enabled {
+        return None;
+    }
+    let selected = inputs.post_process_selected_prompt_id.as_ref()?;
+    inputs
+        .post_process_prompts
+        .iter()
+        .find(|(id, _)| id == selected)
+}
+
+/// "Post-processing" dropdown: "Off" plus one entry per prompt, with exactly
+/// one checked. The title shows the current state, like the model submenu.
+fn build_post_process_submenu(
+    app: &AppHandle,
+    inputs: &MenuInputs,
+    strings: &TrayStrings,
+) -> tauri::Result<Submenu<tauri::Wry>> {
+    let active_prompt = active_post_process_prompt(inputs);
+    let state_label = active_prompt
+        .map(|(_, name)| name.as_str())
+        .unwrap_or(strings.post_process_off.as_str());
+    let title = format!("{}: {}", strings.post_processing, state_label);
+
+    let submenu = Submenu::with_id(app, "post_process_submenu", &title, true)?;
+    submenu.append(&CheckMenuItem::with_id(
+        app,
+        "post_process_off",
+        &strings.post_process_off,
+        true,
+        active_prompt.is_none(),
+        None::<&str>,
+    )?)?;
+    for (id, name) in &inputs.post_process_prompts {
+        let is_active = active_prompt.is_some_and(|(active_id, _)| active_id == id);
+        submenu.append(&CheckMenuItem::with_id(
+            app,
+            format!("post_process_prompt:{id}"),
+            name,
+            true,
+            is_active,
+            None::<&str>,
+        )?)?;
+    }
+    Ok(submenu)
 }
 
 fn last_transcript_text(entry: &HistoryEntry) -> &str {
@@ -838,15 +902,15 @@ pub fn copy_last_transcript(app: &AppHandle) {
 #[cfg(test)]
 mod tests {
     use super::{
-        binding_accelerator, last_transcript_text, load_tray_icon, tooltip_text, version_label,
-        MenuInputs, TrayDesired, TrayIconState, TrayProgress,
+        active_post_process_prompt, binding_accelerator, last_transcript_text, load_tray_icon,
+        tooltip_text, version_label, MenuInputs, TrayDesired, TrayIconState, TrayProgress,
     };
     use crate::managers::history::HistoryEntry;
 
     fn build_entry(transcription: &str, post_processed: Option<&str>) -> HistoryEntry {
         HistoryEntry {
             id: 1,
-            file_name: "handy-1.wav".to_string(),
+            file_name: "popizdim-1.wav".to_string(),
             timestamp: 0,
             saved: false,
             title: "Recording".to_string(),
@@ -867,6 +931,9 @@ mod tests {
             locale: "en".to_string(),
             update_checks_enabled: true,
             speak_accelerator: binding_accelerator("ctrl+option+command+s"),
+            post_process_enabled: false,
+            post_process_prompts: vec![("polite".to_string(), "Polite".to_string())],
+            post_process_selected_prompt_id: None,
         }
     }
 
@@ -957,6 +1024,32 @@ mod tests {
     #[test]
     fn progress_label_caps_at_100() {
         assert_eq!(TrayProgress::Percent(250).label(), "100%");
+    }
+
+    #[test]
+    fn post_process_dropdown_state_follows_settings() {
+        let mut menu = inputs(false);
+        menu.post_process_prompts = vec![
+            ("clean".to_string(), "Clean".to_string()),
+            ("polite".to_string(), "Polite".to_string()),
+        ];
+
+        // Off, even with a prompt remembered.
+        menu.post_process_selected_prompt_id = Some("polite".to_string());
+        assert_eq!(active_post_process_prompt(&menu), None);
+
+        // On: the remembered prompt is the active one.
+        menu.post_process_enabled = true;
+        assert_eq!(
+            active_post_process_prompt(&menu).map(|(id, _)| id.as_str()),
+            Some("polite")
+        );
+
+        // On, but the selected prompt was deleted: shown as Off.
+        menu.post_process_selected_prompt_id = Some("gone".to_string());
+        assert_eq!(active_post_process_prompt(&menu), None);
+        menu.post_process_selected_prompt_id = None;
+        assert_eq!(active_post_process_prompt(&menu), None);
     }
 
     #[test]

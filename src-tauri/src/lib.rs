@@ -318,6 +318,17 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                     actions::speak_selection(app, std::time::Duration::from_millis(150));
                 }
             }
+            "post_process_off" => {
+                if let Err(e) = shortcut::set_post_process_mode(app, None) {
+                    log::error!("Failed to turn post-processing off via tray: {}", e);
+                }
+            }
+            id if id.starts_with("post_process_prompt:") => {
+                let prompt_id = id.strip_prefix("post_process_prompt:").unwrap();
+                if let Err(e) = shortcut::set_post_process_mode(app, Some(prompt_id)) {
+                    log::error!("Failed to select post-processing prompt via tray: {}", e);
+                }
+            }
             "unload_model" => {
                 let transcription_manager = app.state::<Arc<TranscriptionManager>>();
                 if !transcription_manager.is_model_loaded() {
@@ -826,11 +837,11 @@ pub fn run(cli_args: CliArgs) {
                     Target::new(if let Some(data_dir) = portable::data_dir() {
                         TargetKind::Folder {
                             path: data_dir.join("logs"),
-                            file_name: Some("handy".into()),
+                            file_name: Some("popizdim".into()),
                         }
                     } else {
                         TargetKind::LogDir {
-                            file_name: Some("handy".into()),
+                            file_name: Some("popizdim".into()),
                         }
                     })
                     .filter(|metadata| {
@@ -959,6 +970,19 @@ pub fn run(cli_args: CliArgs) {
                     .resizable(true)
                     .maximizable(true)
                     .visible(false);
+
+            // macOS: transparent window with native vibrancy, so the glass
+            // surfaces of the page blur whatever is behind the window
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::window::{Effect, EffectState, EffectsBuilder};
+                win_builder = win_builder.transparent(true).effects(
+                    EffectsBuilder::new()
+                        .effect(Effect::UnderWindowBackground)
+                        .state(EffectState::FollowsWindowActiveState)
+                        .build(),
+                );
+            }
 
             if let Some(data_dir) = portable::data_dir() {
                 win_builder = win_builder.data_directory(data_dir.join("webview"));

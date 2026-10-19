@@ -13,6 +13,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { AppWordmark } from "./icons/AppLogo";
+import ModelSelector from "./model-selector";
 import { useSettings } from "../hooks/useSettings";
 import {
   GeneralSettings,
@@ -112,6 +113,20 @@ interface SidebarProps {
   onSectionChange: (section: SidebarSection) => void;
 }
 
+// Gradient tile behind each nav icon (top color, bottom color)
+const TILE_COLORS: Record<string, [string, string]> = {
+  general: ["#5aa9ff", "#2563eb"],
+  history: ["#ffb155", "#f97316"],
+  models: ["#b58bff", "#7c3aed"],
+  cloud: ["#6fd3ff", "#0ea5e9"],
+  tts: ["#5ee0a0", "#16a34a"],
+  dictionary: ["#ffd84d", "#eab308"],
+  advanced: ["#a3abb8", "#6b7280"],
+  postprocessing: ["#ff7ab6", "#db2777"],
+  debug: ["#ff8a7a", "#dc2626"],
+  about: ["#9ba3af", "#4b5563"],
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({
   activeSection,
   onSectionChange,
@@ -124,13 +139,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     .map(([id, config]) => ({ id: id as SidebarSection, ...config }));
 
   return (
-    <div className="flex flex-col w-48 h-full border-e border-mid-gray/20 items-center px-2">
+    <div className="glass-panel relative z-20 flex flex-col w-56 shrink-0 my-2 ms-2 items-center px-2">
       {/* Wordmark only, flush with the nav icons below (px-2 + item p-2), sized to
           the full width left between them and the right edge. */}
-      <div className="w-full px-2 py-4">
+      <div className="w-full px-2 pt-4 pb-3">
         <AppWordmark height={36} className="block" />
       </div>
-      <div className="flex flex-col w-full items-center gap-1 pt-2 border-t border-mid-gray/20">
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-0.5 overflow-y-auto pb-3">
         {availableSections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;
@@ -138,23 +153,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           return (
             <div
               key={section.id}
-              className={`flex gap-2 items-center p-2 w-full rounded-lg cursor-pointer transition-colors ${
-                isActive
-                  ? "bg-logo-primary/80"
-                  : "hover:bg-mid-gray/20 hover:opacity-100 opacity-85"
+              className={`flex gap-2.5 items-center px-2 py-1.5 w-full rounded-[10px] cursor-pointer transition-colors ${
+                isActive ? "bg-text/10" : "hover:bg-text/5"
               }`}
               onClick={() => onSectionChange(section.id)}
             >
-              <Icon width={24} height={24} className="shrink-0" />
-              <p
-                className="text-sm font-medium truncate"
-                title={t(section.labelKey)}
+              <span
+                className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[6px] text-white shadow-[inset_0_0_0_0.5px_#ffffff59,0_1px_2px_#0000003d]"
+                style={{
+                  backgroundImage: `linear-gradient(to bottom, ${TILE_COLORS[section.id]?.[0] ?? "#9ba3af"}, ${TILE_COLORS[section.id]?.[1] ?? "#4b5563"})`,
+                }}
               >
+                <Icon width={13} height={13} strokeWidth={2.25} />
+              </span>
+              <p className="text-sm truncate" title={t(section.labelKey)}>
                 {t(section.labelKey)}
               </p>
             </div>
           );
         })}
+      </div>
+      {/* Active model: same width as the navigation items above */}
+      <div className="w-full pb-2">
+        <ModelSelector variant="panel" />
       </div>
     </div>
   );

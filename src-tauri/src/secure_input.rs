@@ -146,7 +146,7 @@ mod imp {
 
     /// The app's own executable is called `handy`; show its product name.
     fn display_name(exe: String) -> String {
-        if exe == "handy" {
+        if exe == "popizdim" {
             "Popizdim".to_string()
         } else {
             exe

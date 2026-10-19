@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useShowEndOfText } from "../../../hooks/useShowEndOfText";
 import { useTranslation } from "react-i18next";
 import { ask } from "@tauri-apps/plugin-dialog";
 import {
@@ -41,6 +42,9 @@ export const ModelsSettings: React.FC = () => {
   const [languageSearch, setLanguageSearch] = useState("");
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const languageSearchInputRef = useRef<HTMLInputElement>(null);
+  const modelSearchInputRef = useRef<HTMLInputElement>(null);
+  useShowEndOfText(languageSearchInputRef, languageSearch);
+  useShowEndOfText(modelSearchInputRef, searchQuery);
   const {
     models,
     currentModel,
@@ -252,11 +256,12 @@ export const ModelsSettings: React.FC = () => {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40 pointer-events-none" />
         <input
+          ref={modelSearchInputRef}
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t("settings.models.searchPlaceholder")}
-          className="w-full pl-9 pr-3 py-2 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-logo-primary placeholder:text-text/40"
+          className="w-full pl-9 pr-3 py-2 text-sm bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl focus:outline-none focus:shadow-[0_0_0_2px_var(--color-logo-primary)] placeholder:text-text/40"
         />
       </div>
 
@@ -275,7 +280,7 @@ export const ModelsSettings: React.FC = () => {
                 disabled={isRescanning}
                 title={t("settings.models.rescan.tooltip")}
                 aria-label={t("settings.models.rescan.tooltip")}
-                className="flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg bg-mid-gray/10 text-text/60 hover:bg-mid-gray/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center w-8 h-8 text-sm font-medium rounded-xl bg-mid-gray/10 text-text/60 hover:bg-mid-gray/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <RefreshCw
                   className={`w-3.5 h-3.5 ${isRescanning ? "animate-spin" : ""}`}
@@ -335,8 +340,8 @@ export const ModelsSettings: React.FC = () => {
                 </button>
 
                 {languageDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-background border border-mid-gray/80 rounded-lg shadow-lg z-50 overflow-hidden">
-                    <div className="p-2 border-b border-mid-gray/40">
+                  <div className="absolute top-full right-0 mt-1 w-56 bg-background rounded-xl shadow-[inset_0_0_0_1px_var(--glass-hairline),var(--shadow-panel)] z-50 overflow-hidden">
+                    <div className="p-2 border-b border-[color:var(--glass-hairline)]">
                       <input
                         ref={languageSearchInputRef}
                         type="text"
@@ -358,7 +363,7 @@ export const ModelsSettings: React.FC = () => {
                         placeholder={t(
                           "settings.general.language.searchPlaceholder",
                         )}
-                        className="w-full px-2 py-1 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-md focus:outline-none focus:ring-1 focus:ring-logo-primary"
+                        className="w-full px-2 py-1 text-sm bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl focus:outline-none focus:shadow-[0_0_0_2px_var(--color-logo-primary)]"
                       />
                     </div>
                     <div className="max-h-48 overflow-y-auto">

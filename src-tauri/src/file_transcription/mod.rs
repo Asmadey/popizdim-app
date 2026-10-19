@@ -490,7 +490,7 @@ impl<'a> ChunkTranscriber<'a> {
 /// From here on it is a finished dictation: Recordings, history, paste.
 fn deliver(app: &AppHandle, path: &Path, samples: &[f32], text: String) -> Result<(), JobError> {
     let hm = app.state::<Arc<HistoryManager>>();
-    let file_name = format!("handy-{}.wav", chrono::Utc::now().timestamp());
+    let file_name = format!("popizdim-{}.wav", chrono::Utc::now().timestamp());
     match save_wav_file(hm.recordings_dir().join(&file_name), samples) {
         Ok(()) => {
             if let Err(e) = hm.save_entry(file_name, text.clone(), false, None, None) {

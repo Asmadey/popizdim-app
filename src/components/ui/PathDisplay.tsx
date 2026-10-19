@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useShowEndOfText } from "../../hooks/useShowEndOfText";
 import { useTranslation } from "react-i18next";
 import { Button } from "./Button";
 
@@ -14,10 +15,17 @@ export const PathDisplay: React.FC<PathDisplayProps> = ({
   disabled = false,
 }) => {
   const { t } = useTranslation();
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useShowEndOfText(textRef, path);
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 min-w-0 px-2 py-2 bg-mid-gray/10 border border-mid-gray/80 rounded-lg text-xs font-mono break-all select-text cursor-text">
+      <div
+        ref={textRef}
+        title={path}
+        className="flex-1 min-w-0 px-3 py-2 bg-[var(--field-bg)] shadow-[0_0_0_1px_var(--field-ring)] rounded-xl text-xs font-mono whitespace-nowrap overflow-x-hidden select-text cursor-text"
+      >
         {path}
       </div>
       <Button
