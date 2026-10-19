@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Permisos necessaris",
-      "description": "El Popizdim demana alguns permisos per funcionar correctament.",
       "microphone": {
         "title": "Accés al micròfon",
         "description": "Necessari per escoltar la vostra veu i transcriure-la."

@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "İzinler Gerekli",
-      "description": "Popizdim'nin düzgün çalışabilmesi için birkaç izne ihtiyacı var.",
       "microphone": {
         "title": "Mikrofon Erişimi",
         "description": "Sesinizi transkripsiyon için alabilmek için gereklidir."

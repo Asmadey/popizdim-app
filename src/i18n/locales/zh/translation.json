@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "需要权限",
-      "description": "Popizdim 需要一些权限才能正常工作。",
       "microphone": {
         "title": "麦克风访问",
         "description": "需要听取您的语音进行转录。"

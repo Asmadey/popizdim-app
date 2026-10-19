@@ -126,14 +126,13 @@
     "permissions": {
       "tag": "Permissions",
       "title": "Permissions Required",
-      "description": "Popizdim needs a couple of permissions to work properly.",
       "microphone": {
         "title": "Microphone Access",
-        "description": "Required to hear your voice for transcription."
+        "description": "To hear your voice"
       },
       "accessibility": {
         "title": "Accessibility Access",
-        "description": "Required to type transcribed text into your applications."
+        "description": "To paste text"
       },
       "model": {
         "title": "Transcription model",
@@ -158,12 +157,11 @@
       "goToSlide": "Go to screen {{number}}",
       "slides": {
         "welcome": {
-          "title": "Speak. Popizdim types.",
-          "description": "Popizdim turns your voice into text in any app. Let's show you around and get you set up."
+          "title": "Popizdim?"
         },
         "dictation": {
           "title": "Dictate in any app",
-          "description": "Hold your shortcut and speak — the text appears right at your cursor. 60 languages, including mixed speech."
+          "description": "Hold the key and speak in any of 60 languages"
         },
         "models": {
           "title": "Cloud or offline",
@@ -171,15 +169,15 @@
         },
         "vocabulary": {
           "title": "Knows your words",
-          "description": "Add names, brands and terms so they are always spelled right. Filler words and \"uh\"s disappear on their own."
+          "description": "Add words to your dictionary so the LLM can recognize them correctly"
         },
         "polish": {
-          "title": "The right tone, instantly",
-          "description": "Post-processing with a language model fixes punctuation and makes your text professional or polite — on the same shortcut."
+          "title": "In your tone",
+          "description": "Adds punctuation and rewrites the text in the style you need, depending on the preset"
         },
         "speak": {
-          "title": "Hear any text",
-          "description": "Select text in any app and Microsoft MAI-Voice reads it aloud with a single shortcut. Pick a voice and speed, save as MP3."
+          "title": "Text to speech",
+          "description": "Select text → press the hotkey → listen"
         },
         "files": {
           "title": "Transcribe recordings",

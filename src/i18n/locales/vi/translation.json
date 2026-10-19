@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Cần cấp quyền",
-      "description": "Popizdim cần một số quyền để hoạt động bình thường.",
       "microphone": {
         "title": "Quyền truy cập Micrô",
         "description": "Cần thiết để nghe giọng nói của bạn để chuyển đổi."

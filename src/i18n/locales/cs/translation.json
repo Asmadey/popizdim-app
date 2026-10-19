@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Vyžadována oprávnění",
-      "description": "Popizdim potřebuje několik oprávnění pro správné fungování.",
       "microphone": {
         "title": "Přístup k mikrofonu",
         "description": "Potřebný pro zachycení vašeho hlasu k přepisu."
