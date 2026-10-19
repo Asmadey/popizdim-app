@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Tilladelser påkrævet",
-      "description": "Popizdim har brug for et par tilladelser for at fungere korrekt.",
       "microphone": {
         "title": "Mikrofonadgang",
         "description": "Påkrævet for at høre din stemme til transskription."

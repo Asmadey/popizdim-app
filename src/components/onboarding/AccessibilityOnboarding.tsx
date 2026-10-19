@@ -30,7 +30,10 @@ const STATUS_PILL =
   "flex w-fit items-center gap-1.5 rounded-lg bg-text/[0.04] px-3 py-1.5 text-sm text-text/45";
 
 // The two presets offered on the last onboarding step.
-const MODEL_RUSSIAN = "gigaam-v3-e2e-ctc";
+// Catalog ids are "{repo_id}/{default quant file}"; this is "GigaAM v3 E2E-RNN-T".
+// (The legacy "gigaam-v3-e2e-ctc" id is the older ONNX "GigaAM v3".)
+const MODEL_RUSSIAN =
+  "handy-computer/gigaam-v3-e2e-rnnt-gguf/gigaam-v3-e2e-rnnt-Q8_0.gguf";
 const MODEL_ENGLISH = "parakeet-tdt-0.6b-v2";
 const MODEL_PRESETS = [
   { id: MODEL_RUSSIAN, flag: "🇷🇺", labelKey: "russian" },
@@ -522,12 +525,9 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
           <span className="mb-4 w-fit rounded-full bg-logo-primary/15 px-3 py-1 text-sm font-medium text-logo-primary">
             {t("onboarding.permissions.tag")}
           </span>
-          <h1 className="mb-4 text-4xl font-semibold leading-[1.1] tracking-tight">
+          <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight">
             {t("onboarding.permissions.title")}
           </h1>
-          <p className="text-base leading-relaxed text-text/55">
-            {t("onboarding.permissions.description")}
-          </p>
         </div>
 
         <div className="flex flex-col justify-center divide-y divide-text/10 pe-10 pb-20 ps-2">

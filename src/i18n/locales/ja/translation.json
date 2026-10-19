@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "権限が必要です",
-      "description": "Popizdim が正常に動作するにはいくつかの権限が必要です。",
       "microphone": {
         "title": "マイクへのアクセス",
         "description": "文字起こしのためにあなたの声を聞くために必要です。"

@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Behörigheter krävs",
-      "description": "Popizdim behöver ett par behörigheter för att fungera korrekt.",
       "microphone": {
         "title": "Mikrofonåtkomst",
         "description": "Krävs för att höra din röst för transkription."

@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "需要權限",
-      "description": "Popizdim 需要一些權限才能正常運作",
       "microphone": {
         "title": "麥克風存取",
         "description": "需要聽取您的語音進行轉錄"

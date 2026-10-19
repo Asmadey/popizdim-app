@@ -137,9 +137,13 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({
             <h1 className="mb-4 max-w-lg text-4xl font-semibold tracking-tight">
               {t(`onboarding.welcome.slides.${slide.id}.title`)}
             </h1>
-            <p className="max-w-lg text-lg leading-relaxed text-text/60">
-              {t(`onboarding.welcome.slides.${slide.id}.description`)}
-            </p>
+            {i18n.exists(
+              `onboarding.welcome.slides.${slide.id}.description`,
+            ) && (
+              <p className="max-w-lg text-lg leading-relaxed text-text/60">
+                {t(`onboarding.welcome.slides.${slide.id}.description`)}
+              </p>
+            )}
           </div>
         ) : (
           <div className="grid h-full grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
@@ -155,14 +159,14 @@ const WelcomeTour: React.FC<WelcomeTourProps> = ({
               </p>
             </div>
 
-            <div className="relative flex items-center justify-center bg-background pb-16 pt-2">
+            <div className="relative flex items-center justify-center bg-background pb-24 pt-2">
               {illustration ? (
                 <img
                   src={illustration}
                   alt=""
                   draggable={false}
                   style={ILLUSTRATION_MASK}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover object-[50%_70%]"
                 />
               ) : (
                 Icon && (

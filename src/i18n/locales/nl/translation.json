@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Machtigingen vereist",
-      "description": "Popizdim heeft een aantal machtigingen nodig om goed te kunnen werken.",
       "microphone": {
         "title": "Microfoontoegang",
         "description": "Vereist om je stem op te nemen voor transcriptie."

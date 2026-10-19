@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "권한 필요",
-      "description": "Popizdim가 제대로 작동하려면 몇 가지 권한이 필요합니다.",
       "microphone": {
         "title": "마이크 접근",
         "description": "음성 인식을 위해 마이크 접근 권한이 필요합니다."

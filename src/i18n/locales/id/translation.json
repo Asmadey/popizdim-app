@@ -114,7 +114,6 @@
     },
     "permissions": {
       "title": "Izin Diperlukan",
-      "description": "Popizdim memerlukan beberapa izin agar dapat berfungsi dengan baik.",
       "microphone": {
         "title": "Akses Mikrofon",
         "description": "Diperlukan untuk menangkap suara Anda agar dapat ditranskripsikan."
