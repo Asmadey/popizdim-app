@@ -55,11 +55,34 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+          cache-on-failure: true
 
       - name: Check actool
         run: |
           xcode-select -p
           xcrun actool --version
+
+      # The Tauri bundler hides actool's own errors; log what it runs.
+      - name: Wrap actool to log its arguments and output
+        run: |
+          REAL=$(xcrun --find actool)
+          mkdir -p "$RUNNER_TEMP/shim"
+          cat > "$RUNNER_TEMP/shim/actool" <<EOF2
+          #!/bin/bash
+          {
+            echo "cwd: \$(pwd)"
+            echo "args: \$*"
+          } >> "$RUNNER_TEMP/actool.log"
+          "$REAL" "\$@" > "$RUNNER_TEMP/actool.out" 2> "$RUNNER_TEMP/actool.err"
+          code=\$?
+          echo "exit: \$code" >> "$RUNNER_TEMP/actool.log"
+          cat "$RUNNER_TEMP/actool.out" "$RUNNER_TEMP/actool.err" >> "$RUNNER_TEMP/actool.log"
+          cat "$RUNNER_TEMP/actool.out"
+          cat "$RUNNER_TEMP/actool.err" >&2
+          exit \$code
+          EOF2
+          chmod +x "$RUNNER_TEMP/shim/actool"
+          echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
 
       - run: bun install --frozen-lockfile
 
@@ -67,6 +90,10 @@ jobs:
         run: >
           bun run tauri build --bundles app
           --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Show what the Tauri bundler ran
+        if: failure()
+        run: cat "$RUNNER_TEMP/actool.log" || true
 
       - name: Check the icon in the bundle
         run: |
