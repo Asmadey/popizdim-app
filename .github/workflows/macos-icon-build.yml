@@ -1,9 +1,10 @@
 name: macOS app build (native icon)
 
-# Builds Popizdim.app on a macOS 26 runner, where Xcode 26's actool compiles
-# src-tauri/icons/icon.icon into Assets.car. No signing secrets are needed:
-# the app is ad-hoc signed ("signingIdentity": "-") and updater artifacts are
-# switched off because they require a private key.
+# Builds Popizdim.app on a macOS 26 runner, where Xcode 26's actool is
+# available, then adds the Icon Composer icon (src-tauri/icons/icon.icon) with
+# scripts/add-native-icon.sh. No signing secrets are needed: the app is
+# ad-hoc signed and updater artifacts are switched off because they require a
+# private key.
 
 on:
   workflow_dispatch:
@@ -12,38 +13,7 @@ on:
       - claude/old-app-icon-applications-da3c9b
 
 jobs:
-  # Fast check: run actool on the .icon directly so its own error output is
-  # visible (the Tauri bundler only reports "failed to run actool").
-  icon-check:
-    runs-on: macos-26
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - name: Compile icon.icon with actool (path variants)
-        run: |
-          set +e
-          for hidden in no yes; do
-            for mkout in yes no; do
-              base="$RUNNER_TEMP/tmpdir$RANDOM"
-              [ $hidden = yes ] && base="$RUNNER_TEMP/.tmp$RANDOM"
-              rm -rf "$base" && mkdir -p "$base"
-              cp -R src-tauri/icons/icon.icon "$base/Icon.icon"
-              [ $mkout = yes ] && mkdir -p "$base/out"
-              echo "=== hidden=$hidden out-exists=$mkout"
-              (cd src-tauri && xcrun actool "$base/Icon.icon" --compile "$base/out" \
-                --output-format human-readable-text --notices --warnings \
-                --output-partial-info-plist "$base/out/assetcatalog_generated_info.plist" \
-                --app-icon Icon --include-all-app-icons --accent-color AccentColor \
-                --enable-on-demand-resources NO --development-region en \
-                --target-device mac --minimum-deployment-target 26.0 \
-                --platform macosx 2>&1 | grep -E 'error:|Exception' | cut -c1-200 | head -2)
-              echo "files: $(ls "$base/out" 2>&1 | tr '\n' ' ')"
-            done
-          done
-          exit 0
-
   build:
-    needs: icon-check
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -60,34 +30,6 @@ jobs:
           workspaces: src-tauri
           cache-on-failure: true
 
-      - name: Check actool
-        run: |
-          xcode-select -p
-          xcrun actool --version
-
-      # The Tauri bundler hides actool's own errors; log what it runs.
-      - name: Wrap actool to log its arguments and output
-        run: |
-          REAL=$(xcrun --find actool)
-          mkdir -p "$RUNNER_TEMP/shim"
-          cat > "$RUNNER_TEMP/shim/actool" <<EOF2
-          #!/bin/bash
-          {
-            echo "cwd: \$(pwd)"
-            echo "args: \$*"
-            [ -d "\$1" ] && { find "\$1" -exec ls -ld {} \\; ; cat "\$1/icon.json"; }
-          } >> "$RUNNER_TEMP/actool.log"
-          "$REAL" "\$@" > "$RUNNER_TEMP/actool.out" 2> "$RUNNER_TEMP/actool.err"
-          code=\$?
-          echo "exit: \$code" >> "$RUNNER_TEMP/actool.log"
-          cat "$RUNNER_TEMP/actool.out" "$RUNNER_TEMP/actool.err" >> "$RUNNER_TEMP/actool.log"
-          cat "$RUNNER_TEMP/actool.out"
-          cat "$RUNNER_TEMP/actool.err" >&2
-          exit \$code
-          EOF2
-          chmod +x "$RUNNER_TEMP/shim/actool"
-          echo "$RUNNER_TEMP/shim" >> "$GITHUB_PATH"
-
       - run: bun install --frozen-lockfile
 
       - name: Build the app bundle
@@ -95,14 +37,14 @@ jobs:
           bun run tauri build --bundles app
           --config '{"bundle":{"createUpdaterArtifacts":false}}'
 
-      - name: Show what the Tauri bundler ran
-        if: failure()
-        run: cat "$RUNNER_TEMP/actool.log" || true
+      - name: Add the native icon
+        run: |
+          APP=$(find src-tauri/target/release/bundle/macos -maxdepth 1 -name '*.app' | head -1)
+          echo "APP=$APP" >> "$GITHUB_ENV"
+          scripts/add-native-icon.sh "$APP"
 
       - name: Check the icon in the bundle
         run: |
-          APP=$(find src-tauri/target/release/bundle/macos -maxdepth 1 -name '*.app' | head -1)
-          echo "app: $APP"
           ls -la "$APP/Contents/Resources"
           test -f "$APP/Contents/Resources/Assets.car"
           plutil -p "$APP/Contents/Info.plist" | grep -E 'CFBundleIcon'
@@ -110,13 +52,13 @@ jobs:
           mkdir -p out
           ditto -c -k --keepParent "$APP" out/Popizdim.app.zip
           cp "$APP/Contents/Resources/Assets.car" out/Assets.car
-          cat > render.swift <<'EOF'
+          cat > render.swift <<'EOF2'
           import AppKit
           let icon = NSWorkspace.shared.icon(forFile: CommandLine.arguments[1])
           icon.size = NSSize(width: 512, height: 512)
           let rep = NSBitmapImageRep(data: icon.tiffRepresentation!)!
           try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: CommandLine.arguments[2]))
-          EOF
+          EOF2
           swiftc -o render render.swift
           ./render "$APP" out/icon-as-macos-shows-it.png
 
