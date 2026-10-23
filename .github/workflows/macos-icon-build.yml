@@ -19,21 +19,26 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Compile icon.icon with actool (accent colour variants)
+      - name: Compile icon.icon with actool (path variants)
         run: |
           set +e
-          for accent in "" "--accent-color AccentColor"; do
-            rm -rf work out && mkdir -p work out
-            cp -R src-tauri/icons/icon.icon work/Icon.icon
-            echo "=== accent: '$accent'"
-            xcrun actool work/Icon.icon --compile out \
-              --output-format human-readable-text --notices --warnings \
-              --output-partial-info-plist out/assetcatalog_generated_info.plist \
-              --app-icon Icon --include-all-app-icons $accent \
-              --enable-on-demand-resources NO --development-region en \
-              --target-device mac --minimum-deployment-target 26.0 \
-              --platform macosx 2>&1 | grep -E 'error|Exception' | head -3
-            echo "exit=${PIPESTATUS[0]} files: $(ls out | tr '\n' ' ')"
+          for hidden in no yes; do
+            for mkout in yes no; do
+              base="$RUNNER_TEMP/tmpdir$RANDOM"
+              [ $hidden = yes ] && base="$RUNNER_TEMP/.tmp$RANDOM"
+              rm -rf "$base" && mkdir -p "$base"
+              cp -R src-tauri/icons/icon.icon "$base/Icon.icon"
+              [ $mkout = yes ] && mkdir -p "$base/out"
+              echo "=== hidden=$hidden out-exists=$mkout"
+              (cd src-tauri && xcrun actool "$base/Icon.icon" --compile "$base/out" \
+                --output-format human-readable-text --notices --warnings \
+                --output-partial-info-plist "$base/out/assetcatalog_generated_info.plist" \
+                --app-icon Icon --include-all-app-icons --accent-color AccentColor \
+                --enable-on-demand-resources NO --development-region en \
+                --target-device mac --minimum-deployment-target 26.0 \
+                --platform macosx 2>&1 | grep -E 'error:|Exception' | cut -c1-200 | head -2)
+              echo "files: $(ls "$base/out" 2>&1 | tr '\n' ' ')"
+            done
           done
           exit 0
 
