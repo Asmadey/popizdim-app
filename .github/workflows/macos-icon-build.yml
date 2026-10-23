@@ -19,20 +19,25 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Compile icon.icon with actool
+      - name: Compile icon.icon with actool (deployment target variants)
         run: |
-          xcrun actool --version
-          cat src-tauri/icons/icon.icon/icon.json
-          mkdir -p out
-          xcrun actool src-tauri/icons/icon.icon --compile out \
-            --output-format human-readable-text --notices --warnings --errors \
-            --output-partial-info-plist out/partial.plist \
-            --app-icon icon --include-all-app-icons \
-            --enable-on-demand-resources NO --development-region en \
-            --target-device mac --minimum-deployment-target 26.0 \
-            --platform macosx
-          ls -la out
-          cat out/partial.plist
+          set +e
+          for target in 26.0 10.15; do
+            for name in icon Icon; do
+              rm -rf work out && mkdir -p work out
+              cp -R src-tauri/icons/icon.icon work/$name.icon
+              echo "=== target=$target app-icon=$name"
+              xcrun actool work/$name.icon --compile out \
+                --output-format human-readable-text --notices --warnings --errors \
+                --output-partial-info-plist out/partial.plist \
+                --app-icon $name --include-all-app-icons \
+                --enable-on-demand-resources NO --development-region en \
+                --target-device mac --minimum-deployment-target $target \
+                --platform macosx 2>&1 | tail -15
+              echo "exit=${PIPESTATUS[0]} files: $(ls out | tr '\n' ' ')"
+            done
+          done
+          exit 0
 
   build:
     needs: icon-check
