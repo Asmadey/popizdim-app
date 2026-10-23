@@ -70,6 +70,7 @@ jobs:
           {
             echo "cwd: \$(pwd)"
             echo "args: \$*"
+            [ -d "\$1" ] && { find "\$1" -exec ls -ld {} \\; ; cat "\$1/icon.json"; }
           } >> "$RUNNER_TEMP/actool.log"
           "$REAL" "\$@" > "$RUNNER_TEMP/actool.out" 2> "$RUNNER_TEMP/actool.err"
           code=\$?
