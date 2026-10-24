@@ -1,0 +1,66 @@
+name: macOS app build (native icon)
+
+# Builds Popizdim.app on a macOS 26 runner, where Xcode 26's actool is
+# available, then adds the Icon Composer icon (src-tauri/icons/icon.icon) with
+# scripts/add-native-icon.sh. No signing secrets are needed: the app is
+# ad-hoc signed and updater artifacts are switched off because they require a
+# private key.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      CMAKE_POLICY_VERSION_MINIMUM: "3.5"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          cache-on-failure: true
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build the app bundle
+        run: >
+          bun run tauri build --bundles app
+          --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Add the native icon
+        run: |
+          APP=$(find src-tauri/target/release/bundle/macos -maxdepth 1 -name '*.app' | head -1)
+          echo "APP=$APP" >> "$GITHUB_ENV"
+          scripts/add-native-icon.sh "$APP"
+
+      - name: Check the icon in the bundle
+        run: |
+          ls -la "$APP/Contents/Resources"
+          test -f "$APP/Contents/Resources/Assets.car"
+          plutil -p "$APP/Contents/Info.plist" | grep -E 'CFBundleIcon'
+          plutil -extract CFBundleIconName raw "$APP/Contents/Info.plist"
+          mkdir -p out
+          ditto -c -k --keepParent "$APP" out/Popizdim.app.zip
+          cp "$APP/Contents/Resources/Assets.car" out/Assets.car
+          cat > render.swift <<'EOF2'
+          import AppKit
+          let icon = NSWorkspace.shared.icon(forFile: CommandLine.arguments[1])
+          icon.size = NSSize(width: 512, height: 512)
+          let rep = NSBitmapImageRep(data: icon.tiffRepresentation!)!
+          try! rep.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: CommandLine.arguments[2]))
+          EOF2
+          swiftc -o render render.swift
+          ./render "$APP" out/icon-as-macos-shows-it.png
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: popizdim-macos-native-icon
+          path: out/
+          if-no-files-found: error
