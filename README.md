@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://popizdim.com"><b>Сайт</b></a> ·
   <a href="https://github.com/Asmadey/popizdim-app/releases/latest"><b>Скачать DMG</b></a> ·
   <a href="#установка">Установка</a> ·
   <a href="#настройка">Настройка</a> ·
